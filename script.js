@@ -3,12 +3,15 @@ let filters = {
   brightness: { value: 100, min: 0, max: 200, unit: "%" },
   contrast: { value: 100, min: 0, max: 200, unit: "%" },
   saturate: { value: 100, min: 0, max: 200, unit: "%" },
-  hueRotate: { value: 0, min: 0, max: 360, unit: "deg" },
+  hueRotate: { value: 0, min: -180, max: 360, unit: "deg" },
   blur: { value: 0, min: 0, max: 20, unit: "px" },
   grayscale: { value: 0, min: 0, max: 100, unit: "%" },
   sepia: { value: 0, min: 0, max: 100, unit: "%" },
   opacity: { value: 100, min: 0, max: 100, unit: "%" },
   invert: { value: 0, min: 0, max: 100, unit: "%" },
+  rotate: { value: 0, min: 0, max: 360, unit: "deg" },
+  flipX: { value: 1, min: 0, max: 1, unit: "" },
+  flipY: { value: 1, min: 0, max: 1, unit: "" },
 };
 
 /**CANVAS */
@@ -21,6 +24,10 @@ const presetsContainer = document.querySelector(".presets");
 
 let file = null;
 let image = null;
+
+//Undo/Redo
+const history = [];
+let historyIndex = -1;
 
 const filtersContainer = document.querySelector(".filters");
 
@@ -43,7 +50,7 @@ function createFilterElement(name, unit = "%", value, min, max) {
   div.appendChild(input);
 
   input.addEventListener("input", (event) => {
-    filters[name].value = input.value;
+    filters[name].value = Number(input.value);
     applyFilters();
   });
 
@@ -81,9 +88,31 @@ imgInput.addEventListener("change", function (event) {
     canvasCtx.drawImage(img, 0, 0);
   };
 });
-
+//save
+function saveState() {
+  history.splice(historyIndex + 1);
+  history.push(imageCanvas.toDataURL());
+  historyIndex++;
+}
+function loadFromHistory() {
+  const img = new Image();
+  img.src = history[historyIndex];
+  img.onload = () => {
+    canvasCtx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
+    canvasCtx.drawImage(img, 0, 0);
+  };
+}
+//Undo
+function undo() {
+  if (historyIndex <= 0) return;
+  historyIndex--;
+  loadFromHistory();
+}
 function applyFilters() {
   if (!image) return;
+
+  canvasCtx.save();
+
   canvasCtx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
   canvasCtx.filter = `
   brightness(${filters.brightness.value}${filters.brightness.unit})
@@ -95,9 +124,19 @@ function applyFilters() {
   sepia(${filters.sepia.value}${filters.sepia.unit})
   opacity(${filters.opacity.value}${filters.opacity.unit})
   invert(${filters.invert.value}${filters.invert.unit})
+  
   `.trim();
+  canvasCtx.translate(imageCanvas.width / 2, imageCanvas.height / 2);
+  canvasCtx.rotate((filters.rotate.value * Math.PI) / 180);
 
-  canvasCtx.drawImage(image, 0, 0);
+  const flipX = filters.flipX.value === 0 ? -1 : 1;
+  const flipY = filters.flipY.value === 0 ? -1 : 1;
+
+  canvasCtx.scale(flipX, flipY);
+
+  canvasCtx.drawImage(image, -image.width / 2, -image.height / 2);
+  canvasCtx.restore();
+  saveState();
 }
 
 resetButton.addEventListener("click", () => {
@@ -105,12 +144,15 @@ resetButton.addEventListener("click", () => {
     brightness: { value: 100, min: 0, max: 200, unit: "%" },
     contrast: { value: 100, min: 0, max: 200, unit: "%" },
     saturate: { value: 100, min: 0, max: 200, unit: "%" },
-    hueRotate: { value: 0, min: 0, max: 360, unit: "deg" },
+    hueRotate: { value: 0, min: -180, max: 360, unit: "deg" },
     blur: { value: 0, min: 0, max: 20, unit: "px" },
     grayscale: { value: 0, min: 0, max: 100, unit: "%" },
     sepia: { value: 0, min: 0, max: 100, unit: "%" },
     opacity: { value: 100, min: 0, max: 100, unit: "%" },
     invert: { value: 0, min: 0, max: 100, unit: "%" },
+    rotate: { value: 0, min: 0, max: 360, unit: "deg" },
+    flipX: { value: 1, min: 0, max: 1, unit: "" },
+    flipY: { value: 1, min: 0, max: 1, unit: "" },
   };
   applyFilters();
   filtersContainer.innerHTML = "";
@@ -136,6 +178,9 @@ const presets = {
     sepia: 0,
     opacity: 100,
     invert: 0,
+    rotate: 0,
+    flipX: 1,
+    flipY: 1,
   },
 
   Drama: {
@@ -148,6 +193,9 @@ const presets = {
     sepia: 10,
     opacity: 100,
     invert: 0,
+    rotate: 0,
+    flipX: 1,
+    flipY: 1,
   },
 
   Vintage: {
@@ -160,6 +208,9 @@ const presets = {
     sepia: 40,
     opacity: 100,
     invert: 0,
+    rotate: 0,
+    flipX: 1,
+    flipY: 1,
   },
 
   OldSchool: {
@@ -172,6 +223,9 @@ const presets = {
     sepia: 60,
     opacity: 100,
     invert: 0,
+    rotate: 0,
+    flipX: 1,
+    flipY: 1,
   },
 
   BlackAndWhite: {
@@ -184,6 +238,9 @@ const presets = {
     sepia: 0,
     opacity: 100,
     invert: 0,
+    rotate: 0,
+    flipX: 1,
+    flipY: 1,
   },
 
   Cinematic: {
@@ -196,6 +253,9 @@ const presets = {
     sepia: 5,
     opacity: 100,
     invert: 0,
+    rotate: 0,
+    flipX: 1,
+    flipY: 1,
   },
 
   Faded: {
@@ -208,6 +268,9 @@ const presets = {
     sepia: 15,
     opacity: 100,
     invert: 0,
+    rotate: 0,
+    flipX: 1,
+    flipY: 1,
   },
 
   CoolTone: {
@@ -220,6 +283,9 @@ const presets = {
     sepia: 0,
     opacity: 100,
     invert: 0,
+    rotate: 0,
+    flipX: 1,
+    flipY: 1,
   },
 
   WarmTone: {
@@ -232,6 +298,9 @@ const presets = {
     sepia: 20,
     opacity: 100,
     invert: 0,
+    rotate: 0,
+    flipX: 1,
+    flipY: 1,
   },
 
   Retro: {
@@ -244,6 +313,9 @@ const presets = {
     sepia: 50,
     opacity: 100,
     invert: 0,
+    rotate: 0,
+    flipX: 1,
+    flipY: 1,
   },
 };
 
