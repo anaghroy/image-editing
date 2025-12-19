@@ -6,7 +6,15 @@
   font-family: Aeonik-Bold;
   src: url(./fonts/fonnts.com-Aeonik-Bold.ttf);
 }
-
+/*scrollbar-background*/
+::-webkit-scrollbar {
+  background-color: #1010108e;
+  width: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(90, 90, 90, 0.523);
+  border-radius: 20px;
+}
 * {
   margin: 0;
   padding: 0;
@@ -21,6 +29,7 @@ body {
   width: 100%;
   background-color: var(--bg-primary-color);
   color: var(--text-primary-color);
+  user-select: none;
 }
 
 main {
@@ -88,7 +97,6 @@ main {
           display: none;
           // background-color: red;
         }
-       
       }
     }
   }
