@@ -83,6 +83,11 @@ main section .left .bottom i {
 main section .left .bottom p {
   font-size: var(--font-size-lg);
 }
+main section .left .bottom canvas {
+  max-width: 90%;
+  max-height: 80vh;
+  display: none;
+}
 main .right {
   width: 30%;
   background-color: var(--bg-secondary-color);
@@ -125,4 +130,20 @@ main .right .filters .filter input::-webkit-slider-runnable-track {
   background-color: var(--bg-active-color);
   height: 3px;
   border-radius: var(--border-radius-md);
+}
+main .right .presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gutter-sm);
+}
+
+/*Golbal Button*/
+.btn {
+  padding: var(--padding-sm) var(--padding-lg);
+  border: none;
+  outline: none;
+  border-radius: var(--border-radius-md);
+  background-color: var(--bg-active-color);
+  color: var(--text-active-color);
+  cursor: pointer;
 }/*# sourceMappingURL=style.css.map */

@@ -82,6 +82,12 @@ main {
         p {
           font-size: var(--font-size-lg);
         }
+        canvas {
+          max-width: 90%;
+          max-height: 80vh;
+          display: none;
+          // background-color: red;
+        }
       }
     }
   }
@@ -125,5 +131,20 @@ main {
         }
       }
     }
+    .presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--gutter-sm);
+    }
   }
+}
+/*Golbal Button*/
+.btn {
+  padding: var(--padding-sm) var(--padding-lg);
+  border: none;
+  outline: none;
+  border-radius: var(--border-radius-md);
+  background-color: var(--bg-active-color);
+  color: var(--text-active-color);
+  cursor: pointer;
 }
