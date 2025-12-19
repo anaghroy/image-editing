@@ -25,9 +25,6 @@ const presetsContainer = document.querySelector(".presets");
 let file = null;
 let image = null;
 
-//Undo/Redo
-const history = [];
-let historyIndex = -1;
 
 const filtersContainer = document.querySelector(".filters");
 
@@ -94,20 +91,7 @@ function saveState() {
   history.push(imageCanvas.toDataURL());
   historyIndex++;
 }
-function loadFromHistory() {
-  const img = new Image();
-  img.src = history[historyIndex];
-  img.onload = () => {
-    canvasCtx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
-    canvasCtx.drawImage(img, 0, 0);
-  };
-}
-//Undo
-function undo() {
-  if (historyIndex <= 0) return;
-  historyIndex--;
-  loadFromHistory();
-}
+
 function applyFilters() {
   if (!image) return;
 
@@ -336,3 +320,5 @@ Object.keys(presets).forEach((preseName) => {
     createFilters();
   });
 });
+
+
