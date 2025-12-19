@@ -12,6 +12,11 @@ const filters = {
   invert: { value: 100, min: 0, max: 100, unit: "%" },
 };
 
+/**CANVAS */
+const imageCanvas = document.querySelector("#image-canvas");
+const imageInput = document.querySelector("#image-input");
+const canvasCtx = imageCanvas.getContext("2d");
+
 const filtersContainer = document.querySelector(".filters");
 
 /*Filter element*/
@@ -44,4 +49,14 @@ Object.keys(filters).forEach((key) => {
     filters[key].max
   );
   filtersContainer.appendChild(filterElement);
+});
+
+imageInput.addEventListener("change", function (event) {
+  const file = event.target.files[0];
+  const img = new Image();
+  img.src = URL.createObjectURL(file); // Insert a image
+
+  img.onload = () => {
+    canvasCtx.drawImage(img, 0, 0);
+  };
 });
